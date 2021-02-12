@@ -52,13 +52,25 @@ func Get(page int64, limit int64, filter primitive.M) ([]Shift, PaginationData){
 func Update(ID primitive.ObjectID, shift Shift ) (*mongo.UpdateResult,  error) {
 	collection := MongoClient.Database(os.Getenv("MONGO_DB")).Collection(collection)
 	log.Println(shift.EndDate)
+	data := bson.M{
+		"start_date" : shift.StartDate,
+		"end_date" : shift.EndDate,
+		"assign_user_id" : shift.AssignUserId,
+	}
+	if shift.Status != "" {
+		data["status"] = shift.Status
+	}
 	result , err := collection.UpdateOne(context.TODO(), bson.M{ "_id" : ID,}, bson.M{
-		"$set" : bson.M{
-			"start_date" : shift.StartDate,
-			"end_date" : shift.EndDate,
-			"assign_user_id" : shift.AssignUserId,
-		},
+		"$set" : data,
 	},)
+
+	return result, err
+}
+
+func Delete(ID primitive.ObjectID) (*mongo.DeleteResult,  error) {
+	collection := MongoClient.Database(os.Getenv("MONGO_DB")).Collection(collection)
+	
+	result , err := collection.DeleteOne(context.TODO(), bson.M{ "_id" : ID,})
 
 	return result, err
 }

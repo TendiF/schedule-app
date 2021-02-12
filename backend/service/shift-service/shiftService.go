@@ -32,6 +32,11 @@ func Main(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
+	if r.Method == "DELETE"{
+		deleteShift(w, r)
+		return
+	}
+
 }
 
 func getClashShift(shift Shift) bool{
@@ -55,7 +60,6 @@ func getClashShift(shift Shift) bool{
 		}
 	}
 	shifts , _ := shiftModel.Get(1, 1, filter)
-	log.Println("not Equal", shift.ID, shift)
 
 	if len(shifts) >= 1 {
 		return true
@@ -144,6 +148,9 @@ func updateShift(w http.ResponseWriter, r *http.Request){
 		log.Println(err)
 	}
 
+	log.Println(shift.Status)
+
+
 	if shift.ID, err = primitive.ObjectIDFromHex(vars["id"]); err != nil {
 		http.Error(w, "invalid update id", http.StatusNotAcceptable)
 		return
@@ -153,6 +160,10 @@ func updateShift(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "shift not found", http.StatusNotAcceptable)
 		return
 	} else {
+		if shifts[0].Status == "published" {
+			http.Error(w, "shift status already publish", http.StatusNotAcceptable)
+			return
+		}
 		shift.CreatedAt = shifts[0].CreatedAt
 	}
 
@@ -176,14 +187,49 @@ func updateShift(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	shift.Status = "created"
-
 	if result, err := shiftModel.Update(shift.ID, shift); err != nil || result.MatchedCount == 0 {
 		http.Error(w, "fail update data", http.StatusNotAcceptable)
 		return 
 	}
 
 	b, err := json.Marshal(shift)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	w.Write([]byte(string(b)))
+}
+
+func deleteShift(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	var shift Shift
+	var err error
+
+	if shift.ID, err = primitive.ObjectIDFromHex(vars["id"]); err != nil {
+		http.Error(w, "invalid update id", http.StatusNotAcceptable)
+		return
+	}
+	
+	if shifts , _ := shiftModel.Get(1,1,bson.M{"_id" : shift.ID}); len(shifts) != 1 {
+		http.Error(w, "shift not found", http.StatusNotAcceptable)
+		return
+	} else {
+		if shifts[0].Status == "published" {
+			http.Error(w, "shift status already publish", http.StatusNotAcceptable)
+			return
+		}
+		shift.CreatedAt = shifts[0].CreatedAt
+	}
+
+	result, err := shiftModel.Delete(shift.ID)
+
+	if err != nil{
+		http.Error(w, "fail delete data", http.StatusNotAcceptable)
+		return
+	}
+
+	b, err := json.Marshal(result)
 	if err != nil {
 		log.Println(err)
 		return
