@@ -5,7 +5,7 @@
 package main
 
 import (
-	scheduleService "schedule-app/service/schedule-service"
+	shiftService "schedule-app/service/shift-service"
 	userService "schedule-app/service/user-service"
 	utilsService "schedule-app/utils"
 	"flag"
@@ -22,9 +22,9 @@ func main() {
 	router := mux.NewRouter()
 
 
-	schedule := router.PathPrefix("/schedule").Subrouter()
-		schedule.HandleFunc("", scheduleService.Main)
-		schedule.HandleFunc("/{id}", scheduleService.Main)
+	shift := router.PathPrefix("/shift").Subrouter()
+		shift.HandleFunc("", shiftService.Main)
+		shift.HandleFunc("/{id}", shiftService.Main)
 	user := router.PathPrefix("/user").Subrouter()
 		user.HandleFunc("", userService.Main)
 

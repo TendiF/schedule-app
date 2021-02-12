@@ -10,7 +10,7 @@ type User struct {
 	Name string `bson:"name,omitempty" json:"name"`
 }
 
-type Schedule struct {
+type Shift struct {
 	ID primitive.ObjectID `bson:"_id,omitempty"`
 	CreatedAt primitive.DateTime `bson:"created_at,omitempty" json:"created_at"`
 	AssignUserId primitive.ObjectID `bson:"assign_user_id,omitempty" json:"assign_user_id"`
