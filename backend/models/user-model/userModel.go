@@ -5,7 +5,6 @@ import (
 	"os"
 	"context"
 	"log"
-	"encoding/json"
 	. "schedule-app/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,8 +27,7 @@ func Add(user User) User{
 	return user
 }
 
-func Get(page int64, limit int64) []byte{
-	filter := bson.M{}
+func Get(page int64, limit int64, filter primitive.M) ([]User, PaginationData){
 	collection := MongoClient.Database(os.Getenv("MONGO_DB")).Collection(collection)
 	projection := bson.D{
 	}
@@ -47,15 +45,7 @@ func Get(page int64, limit int64) []byte{
 		}
 	}
 
-	b, err := json.Marshal(map[string]interface{}{
-		"data" : users,
-		"pagination" : paginatedData.Pagination,
-	})
-
-	if err != nil {
-		log.Println("error:", err)
-	}
-	return b
+	return users, paginatedData.Pagination
 }	
 
 func GetByPhone(phone string)(User, error){

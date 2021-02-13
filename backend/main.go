@@ -27,6 +27,7 @@ func main() {
 		shift.HandleFunc("/{id}", shiftService.Main)
 	user := router.PathPrefix("/user").Subrouter()
 		user.HandleFunc("", userService.Main)
+		user.HandleFunc("/login", userService.Main)
 
 	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
 }
