@@ -19,7 +19,8 @@ export const { storeUser } = userReducer.actions;
 export const doLogin = (data, cb = () => {}) => dispatch => {
   axios.post('/user/login', data)
   .then(res => {
-    dispatch(storeUser(res.data.data));
+    dispatch(storeUser(res.data.data[0]));
+    sessionStorage.setItem("login", true)
     cb()
   })
   .catch(err => {
@@ -30,7 +31,8 @@ export const doLogin = (data, cb = () => {}) => dispatch => {
 export const doRegister = (data, cb = () => {}) => dispatch => {
   axios.post('/user', data)
   .then(res => {
-    dispatch(storeUser(res.data.data));
+    dispatch(storeUser(res.data.data[0]));
+    sessionStorage.setItem("login", true)
     cb()
   })
   .catch(err => {

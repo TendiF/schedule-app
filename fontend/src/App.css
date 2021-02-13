@@ -45,3 +45,11 @@ a:visited, a:link, a:hover, v  {
   text-decoration: none;
   color: black;
 }
+
+.shiftCard {
+  margin: 10px;
+  background: #99bbad;
+  color: white;
+  padding:15px;
+  border-radius: 10px;
+}

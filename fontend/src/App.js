@@ -16,14 +16,14 @@ function App() {
   return (
     <Router>
       <Switch>
+      <Route path="/shift">
+          <Shift/>
+        </Route>
         <Route path="/login">
           <Login/>
         </Route>
         <Route path="/register">
           <Register/>
-        </Route>
-        <Route path="/">
-          <Shift/>
         </Route>
       </Switch>
       <NotificationContainer/>
