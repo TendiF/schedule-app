@@ -96,8 +96,15 @@ func login(w http.ResponseWriter, r *http.Request){
 	})
 
 	if len(data) >= 1 {
-		w.Write([]byte("Success Login"))
+		b, err := json.Marshal(map[string]interface{}{
+			"data" : data[0],
+		})
+		if err != nil {
+			http.Error(w, "Error parse data", http.StatusNotAcceptable)
+			w.Write([]byte("Error Parse Data"))
+		}
+		w.Write([]byte(b))
 	} else {
-		w.Write([]byte("Fail Login"))
+		http.Error(w, "Login Error", http.StatusNotAcceptable)
 	}
 }
