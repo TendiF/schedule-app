@@ -6,45 +6,37 @@ import {
   useParams,
   useRouteMatch
 } from "react-router-dom"
-
+import {NotificationManager} from 'react-notifications';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+
+import axios from '../app/utils/axios'
 import { getUser } from '../app/userReducer'
 import { getAxiosShift, getShift } from '../app/shiftReducer'
 
 export default function Shift() {
   const {user} = useSelector(getUser);
   let { path, url } = useRouteMatch();
-  const [userData, setUser] = useState({});
-  
-  let login = sessionStorage.getItem("login")
-
-  useEffect(() => {
-    if(user.data){
-      setUser(user.data)
-    }
-  }, [user, userData])
-
   return <>
-    {!login && <Redirect to="/login" />} 
+    {!user.data.id && <Redirect to="/login" />} 
     <div className="header">
-      <h4>Shift {userData.name}</h4>
+      <h4>Shift {user.data ? user.data.id : ""}</h4>
     </div>
     <Switch>
         <Route exact path={path}>
          <ul>
             <li>
-              <Link to={`${url}/form`}>Form</Link>
+              <Link to={`${url}/form`}>Add Shift</Link>
             </li>
             <li>
-              <Link to={`${url}/1`}>detail </Link>
+              <Link to={`${url}/1`}>Detail </Link>
             </li>
           </ul>
-          <ListShift user={userData}/>
+          <ListShift user={user.data}/>
         </Route>
         <Route path={`${path}/form`}>
-          <FormShift />
+          <FormShift user={user.data} />
         </Route>
         <Route path={`${path}/:id`}>
           <DetailShift />
@@ -60,10 +52,34 @@ function DetailShift(){
   </div>
 }
 
-function FormShift(){
+function FormShift(props){
+  let {user} = props
   let { id } = useParams();
-  return <div>
-    Form Shift
+  let [start_date, setStartDate] = useState("");
+  let [end_date, setEndDate] = useState("");
+
+  let submitShift = () => {
+    let data = {
+      start_date,
+      end_date,
+      assign_user_id: user.id
+    }
+    console.log("data", data)
+    axios.post('/shift', data).then(res => {
+    }).catch(err => {
+      NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+    })
+  }
+
+  return <div className="form-shift">
+    <div>Issued : 
+      <select>
+        <option>Siapa</option>
+      </select>
+    </div>
+    <div>Start Date : <input onChange={e => setStartDate(e.target.value)} type="datetime-local"/></div>
+    <div>End Date : <input onChange={e => setEndDate(e.target.value)} type="datetime-local"/></div>
+    <button onClick={() => submitShift()}>Add New Shift</button>
   </div>
 }
 

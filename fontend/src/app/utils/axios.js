@@ -1,11 +1,6 @@
 import axios from 'axios'
 let headers = {
-}
-
-let token = localStorage.getItem('token')
-
-if(token){
-    headers.Authorization = `Bearer ${token}`
+    'Content-Type': 'application/json'
 }
 
 let axiosInstance =  axios.create({

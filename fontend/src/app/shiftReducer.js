@@ -17,8 +17,11 @@ export const shiftReducer = createSlice({
 export const { storeShift } = shiftReducer.actions;
 
 export const getAxiosShift = (data, cb = () => {}) => dispatch => {
-  axios.get('/shift', data)
+  axios.get('/shift', {
+    params: data
+  }, { headers: { "Content-Type": "application/json" } })
   .then(res => {
+    console.log("res",res, data)
     dispatch(storeShift(res.data.data));
     cb()
   })
