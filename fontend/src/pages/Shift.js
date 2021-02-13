@@ -78,7 +78,7 @@ function FormShift(props){
       end_date : end_date ? new Date(end_date).toISOString(): "",
       assign_user_id: user_id ? user_id :  user.id
     }
-    
+
     axios.post('/shift', data).then(res => {
       NotificationManager.success('add success', '', 3000);
     }).catch(err => {
@@ -123,14 +123,36 @@ function ListShift(props){
    }
   }
 
+  let publishShift = (id, data) => {
+    // eslint-disable-next-line
+   if(confirm("publish ? ")) {
+    axios.put('/shift/'+id, {
+      start_date : data.start_date,
+      end_date : data.end_date,
+      assign_user_id : data.assign_user_id,
+      status : 'published'
+    })
+    .then(res => {
+      NotificationManager.success('publish success', '', 3000);
+      dispatch(getAxiosShift({id_user : props.user.id}))
+    })
+    .catch(err => {
+      NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+    })
+   }
+  }
+
   return <div>
     {Array.isArray(shift.data) && !shift.data.length && "empty data"}
     {Array.isArray(shift.data) && shift.data.map((v,i) => {
       return <div key={v.start_date} className="shiftCard">
-        <h4>Name</h4>
+        <h4>Name ({v.status})</h4>
         <div style={{display:"flex", justifyContent: "space-between"}}>
           <StartEnd start_date={v.start_date} end_date={v.end_date}/>
-          <button onClick={() => deleteShift(v.id)}>Delete</button>
+          <div>
+            <button onClick={() => deleteShift(v.id)}>Delete</button>
+            <button onClick={() => publishShift(v.id, v)}>Publish</button>
+          </div>
         </div>
       </div>
     })}
