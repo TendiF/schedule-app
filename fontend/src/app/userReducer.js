@@ -28,6 +28,19 @@ export const doLogin = data => dispatch => {
     NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
   })
 };
+
+export const doRegister = data => dispatch => {
+  axios.post('/user', data)
+  .then(res => {
+    dispatch(storeUser(res.data.user));
+    setTimeout(() => {
+      window.location = "/shift"
+    }, 200);
+  })
+  .catch(err => {
+    NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+  })
+};
 export const getUser = state => state.counter.value;
 
 export default userReducer.reducer;
