@@ -75,7 +75,9 @@ func AddUser(w http.ResponseWriter, r *http.Request){
 
 	user = userModel.Add(user)
 
-	b, err := json.Marshal(user)
+	b, err := json.Marshal(map[string]interface{}{
+		"data" : user,
+	})
 	if err != nil {
 		log.Println(err)
 		return

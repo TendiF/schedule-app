@@ -5,42 +5,38 @@ import {NotificationManager} from 'react-notifications';
 export const userReducer = createSlice({
   name: 'user',
   initialState: {
-    user: {},
+    data: {}
   },
   reducers: {
     storeUser: (state, action) => {
-      state.user = action.payload;
+      state.data = action.payload;
     },
   },
 });
 
 export const { storeUser } = userReducer.actions;
 
-export const doLogin = data => dispatch => {
+export const doLogin = (data, cb = () => {}) => dispatch => {
   axios.post('/user/login', data)
   .then(res => {
-    dispatch(storeUser(res.data.user));
-    setTimeout(() => {
-      window.location = "/shift"
-    }, 200);
+    dispatch(storeUser(res.data.data));
+    cb()
   })
   .catch(err => {
     NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
   })
 };
 
-export const doRegister = data => dispatch => {
+export const doRegister = (data, cb = () => {}) => dispatch => {
   axios.post('/user', data)
   .then(res => {
-    dispatch(storeUser(res.data.user));
-    setTimeout(() => {
-      window.location = "/shift"
-    }, 200);
+    dispatch(storeUser(res.data.data));
+    cb()
   })
   .catch(err => {
     NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
   })
 };
-export const getUser = state => state.counter.value;
+export const getUser = state => state;
 
 export default userReducer.reducer;

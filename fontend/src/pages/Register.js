@@ -5,8 +5,10 @@ import {
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { doRegister } from '../app/userReducer'
+import { useHistory } from "react-router-dom";
 
 export default function Login() {
+  let history = useHistory()
   const dispatch = useDispatch();
   const [name, setName] = useState("");
 
@@ -22,7 +24,7 @@ export default function Login() {
             <input value={name} onChange={e => setName(e.target.value)} placeholder="Name" style={{height:'30px', marginLeft:'10px'}}/>
           </div>
         </div>
-      <button onClick={() => dispatch(doRegister({name}))} style={{marginTop: '15px'}} className="button-primary">Login</button>
+      <button onClick={() => dispatch(doRegister({name}, () => history.push('/shift')))} style={{marginTop: '15px'}} className="button-primary">Login</button>
       <Link style={{marginTop:'10px'}} to="login">Already have account ? <span style={{color:'blue'}}>go to login</span> </Link>
       </div>
     </div>
