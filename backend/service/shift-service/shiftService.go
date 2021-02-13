@@ -75,7 +75,6 @@ func addShift(w http.ResponseWriter, r *http.Request){
 		log.Println(err)
 	}
 
-	log.Println(shift)
 	if shift.AssignUserId.IsZero(){
 		http.Error(w, "invalid assign user id", http.StatusNotAcceptable)
 		return

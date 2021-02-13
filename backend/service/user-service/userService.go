@@ -93,6 +93,8 @@ func login(w http.ResponseWriter, r *http.Request){
 		log.Println(err)
 	}
 
+	log.Println(user)
+
 	data, _ := userModel.Get(1, 1, bson.M{
 		"name" : user.Name,
 	})

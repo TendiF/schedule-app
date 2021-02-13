@@ -60,12 +60,12 @@ function FormShift(props){
 
   let submitShift = () => {
     let data = {
-      start_date,
-      end_date,
+      start_date : new Date(start_date).toISOString(),
+      end_date : new Date(end_date).toISOString(),
       assign_user_id: user.id
     }
-    console.log("data", data)
     axios.post('/shift', data).then(res => {
+      NotificationManager.success('add success', '', 3000);
     }).catch(err => {
       NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
     })
