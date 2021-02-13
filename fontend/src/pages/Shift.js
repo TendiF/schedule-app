@@ -91,12 +91,29 @@ function ListShift(props){
     dispatch(getAxiosShift({id_user : props.user.id}))
   }, [dispatch])
 
+  let deleteShift = id => {
+    // eslint-disable-next-line
+   if(confirm("delete ? ")) {
+    axios.delete('/shift/'+id)
+    .then(res => {
+      NotificationManager.success('delete success', '', 3000);
+      dispatch(getAxiosShift({id_user : props.user.id}))
+    })
+    .catch(err => {
+      NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+    })
+   }
+  }
+
   return <div>
     {Array.isArray(shift.data) && !shift.data.length && "empty data"}
     {Array.isArray(shift.data) && shift.data.map((v,i) => {
       return <div key={v.start_date} className="shiftCard">
         <h4>Name</h4>
-        <StartEnd start_date={v.start_date} end_date={v.end_date}/>
+        <div style={{display:"flex", justifyContent: "space-between"}}>
+          <StartEnd start_date={v.start_date} end_date={v.end_date}/>
+          <button onClick={() => deleteShift(v.id)}>Delete</button>
+        </div>
       </div>
     })}
   </div>
