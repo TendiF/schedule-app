@@ -114,6 +114,7 @@ func getShift(w http.ResponseWriter, r *http.Request){
 	// Example for Normal Find query
 	var page int64 = 1
 	var limit int64 = 10
+	var filter = bson.M{}
 	if keys, ok := r.URL.Query()["page"]; ok {
 		i , err :=  strconv.ParseInt(keys[0], 10, 64)
 		if err != nil {
@@ -130,7 +131,17 @@ func getShift(w http.ResponseWriter, r *http.Request){
 		limit = i
 	}
 
-	data, pagination := shiftModel.Get(page, limit, bson.M{})
+	if keys, ok := r.URL.Query()["id_user"]; ok {
+		if ID, err := primitive.ObjectIDFromHex(keys[0]); err == nil {
+			filter["assign_user_id"] = ID
+		} else {
+			http.Error(w, "invalid id filter", http.StatusNotAcceptable)
+			return
+		}
+		
+	}
+
+	data, pagination := shiftModel.Get(page, limit, filter)
 
 	b, _ := json.Marshal(map[string]interface{}{
 		"data" : data,
