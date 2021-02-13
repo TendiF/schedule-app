@@ -137,8 +137,17 @@ func getShift(w http.ResponseWriter, r *http.Request){
 			http.Error(w, "invalid id filter", http.StatusNotAcceptable)
 			return
 		}
-		
 	}
+	
+
+		if keys, ok := r.URL.Query()["id"]; ok {
+			if ID, err := primitive.ObjectIDFromHex(keys[0]); err == nil {
+				filter["_id"] = ID
+			} else {
+				http.Error(w, "invalid id filter", http.StatusNotAcceptable)
+				return
+			}
+		}
 
 	data, pagination := shiftModel.Get(page, limit, filter)
 

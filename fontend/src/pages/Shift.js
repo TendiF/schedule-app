@@ -4,7 +4,8 @@ import {
   Route,
   Redirect,
   useParams,
-  useRouteMatch
+  useRouteMatch,
+  useHistory
 } from "react-router-dom"
 import {NotificationManager} from 'react-notifications';
 import { useSelector } from 'react-redux';
@@ -39,21 +40,16 @@ export default function Shift() {
           <FormShift user={user.data} />
         </Route>
         <Route path={`${path}/:id`}>
-          <DetailShift />
+          <FormShift type="edit"/>
         </Route>
     </Switch>
   </>
 }
 
-function DetailShift(){
-  let { id } = useParams();
-  return <div>
-    Detail Shift
-  </div>
-}
 
 function FormShift(props){
-  let {user} = props
+  let history = useHistory()
+  let {user, type} = props
   let { id } = useParams();
   let [start_date, setStartDate] = useState("");
   let [end_date, setEndDate] = useState("");
@@ -68,8 +64,32 @@ function FormShift(props){
     })
   }
 
+  let getShift = () => {
+    axios.get('/shift', {
+      params: {
+        id
+      }
+    }).then(res => {
+      if(res.data.data.length){
+        console.log("update cuy", res.data.data)
+        setStartDate(res.data.data[0].start_date)
+        setEndDate(res.data.data[0].end_date)
+        setUserId(res.data.data[0].assign_user_id)
+      } else {
+        history.push("/shift")
+        NotificationManager.error("not found", '', 3000);
+      }
+      
+    }).catch(err => {
+      NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+    })
+  }
+
   useEffect(() => {
     getUsers()
+    if(type == 'edit'){
+      getShift()
+    }
   }, [])
 
   let submitShift = () => {
@@ -91,11 +111,19 @@ function FormShift(props){
       assign_user_id: user_id ? user_id :  user.id
     }
 
-    axios.post('/shift', data).then(res => {
-      NotificationManager.success('add success', '', 3000);
+   if(type == "edit") {
+    axios.put('/shift/' + id , data).then(res => {
+      NotificationManager.success('update success', '', 3000);
     }).catch(err => {
       NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
     })
+   } else {
+      axios.post('/shift', data).then(res => {
+        NotificationManager.success('add success', '', 3000);
+      }).catch(err => {
+        NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+      })
+   }
   }
 
   return <div className="form-shift">
@@ -107,13 +135,14 @@ function FormShift(props){
         })}
       </select>
     </div>
-    <div>Start Date : <input className="border-input" onChange={e => setStartDate(e.target.value)} type="datetime-local"/></div>
-    <div>End Date : <input className="border-input" onChange={e => setEndDate(e.target.value)} type="datetime-local"/></div>
+    <div>Start Date : <input value={start_date ? new Date(new Date(start_date).toLocaleString("en-US", {timeZone: 'UTC'})).toISOString().substr(0,16) : null} className="border-input" onChange={e => setStartDate(e.target.value)} type="datetime-local"/></div>
+    <div>End Date : <input value={end_date ? new Date(new Date(end_date).toLocaleString("en-US", {timeZone: 'UTC'})).toISOString().substr(0,16) : null} className="border-input" onChange={e => setEndDate(e.target.value)} type="datetime-local"/></div>
     <button className="button-primary" onClick={() => submitShift()}>Add New Shift</button>
   </div>
 }
 
 function ListShift(props){
+  let history = useHistory()
   const dispatch = useDispatch();
   const {shift} = useSelector(getShift);
 
@@ -158,10 +187,11 @@ function ListShift(props){
     {Array.isArray(shift.data) && !shift.data.length && "empty data"}
     {Array.isArray(shift.data) && shift.data.map((v,i) => {
       return <div key={v.start_date} className="shiftCard">
-        <h4>Name ({v.status})</h4>
+        <h4>{props.user.name} ({v.status})</h4>
         <div style={{display:"flex", justifyContent: "space-between"}}>
           <StartEnd start_date={v.start_date} end_date={v.end_date}/>
           <div>
+            <button onClick={() => history.push("/shift/" +v.id)}>Edit</button>
             <button onClick={() => deleteShift(v.id)}>Delete</button>
             <button onClick={() => publishShift(v.id, v)}>Publish</button>
           </div>
