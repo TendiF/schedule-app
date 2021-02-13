@@ -74,8 +74,20 @@ function FormShift(props){
 
   let submitShift = () => {
     let data = {
-      start_date : start_date ? new Date(start_date).toISOString() : "",
-      end_date : end_date ? new Date(end_date).toISOString(): "",
+      start_date : start_date ? new Date(
+        start_date.substr(0,4),
+        start_date.substr(5,2),
+        start_date.substr(8,2),
+        start_date.substr(11,2),
+        start_date.substr(14,2),
+      ).toISOString() : "",
+      end_date : end_date ? new Date(
+        end_date.substr(0,4),
+        end_date.substr(5,2),
+        end_date.substr(8,2),
+        end_date.substr(11,2),
+        end_date.substr(14,2),
+      ).toISOString(): "",
       assign_user_id: user_id ? user_id :  user.id
     }
 
