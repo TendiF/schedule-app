@@ -21,7 +21,6 @@ export const getAxiosShift = (data, cb = () => {}) => dispatch => {
     params: data
   }, { headers: { "Content-Type": "application/json" } })
   .then(res => {
-    console.log("res",res, data)
     dispatch(storeShift(res.data.data));
     cb()
   })

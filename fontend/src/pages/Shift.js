@@ -57,13 +57,28 @@ function FormShift(props){
   let { id } = useParams();
   let [start_date, setStartDate] = useState("");
   let [end_date, setEndDate] = useState("");
+  let [users, setUsers] = useState([]);
+  let [user_id, setUserId] = useState("");
+
+  let getUsers = () => {
+    axios.get('/user').then(res => {
+      setUsers(res.data.data)
+    }).catch(err => {
+      NotificationManager.error(err.response ? err.response.data : 'error : something not right', '', 3000);
+    })
+  }
+
+  useEffect(() => {
+    getUsers()
+  }, [])
 
   let submitShift = () => {
     let data = {
-      start_date : new Date(start_date).toISOString(),
-      end_date : new Date(end_date).toISOString(),
-      assign_user_id: user.id
+      start_date : start_date ? new Date(start_date).toISOString() : "",
+      end_date : end_date ? new Date(end_date).toISOString(): "",
+      assign_user_id: user_id ? user_id :  user.id
     }
+    
     axios.post('/shift', data).then(res => {
       NotificationManager.success('add success', '', 3000);
     }).catch(err => {
@@ -72,14 +87,17 @@ function FormShift(props){
   }
 
   return <div className="form-shift">
-    <div>Issued : 
-      <select>
-        <option>Siapa</option>
+    <div style={{padding: "8px", marginBottom: "0px"}}>
+      Assign : 
+      <select onChange={e => {setUserId(e.target.value)}} className="select-user border-input">
+        {users.map((v,i) => {
+          return <option value={v.id}>{v.name}</option>
+        })}
       </select>
     </div>
-    <div>Start Date : <input onChange={e => setStartDate(e.target.value)} type="datetime-local"/></div>
-    <div>End Date : <input onChange={e => setEndDate(e.target.value)} type="datetime-local"/></div>
-    <button onClick={() => submitShift()}>Add New Shift</button>
+    <div>Start Date : <input className="border-input" onChange={e => setStartDate(e.target.value)} type="datetime-local"/></div>
+    <div>End Date : <input className="border-input" onChange={e => setEndDate(e.target.value)} type="datetime-local"/></div>
+    <button className="button-primary" onClick={() => submitShift()}>Add New Shift</button>
   </div>
 }
 

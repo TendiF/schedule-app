@@ -4,7 +4,7 @@
   align-items: center;
 }
 
-.header > div, .footer > div, div.input {
+.header > div, .footer > div, div.input, .border-input {
   display: flex;
   border: 1px solid gray;
   border-radius: 15px;
@@ -12,11 +12,12 @@
   margin-top:10px;
 }
 
-.header > div > input, .footer > div > textarea, input{
+.header > div > input, .footer > div > textarea, input, select{
   border: none;
   border-radius: 15px;
   width: 100%;
   font-size: 16px;
+  padding: 8px;
 }
 
 input:focus, textarea:focus, select:focus{
@@ -56,4 +57,17 @@ a:visited, a:link, a:hover, v  {
 
 .form-shift > div {
   margin: 15px 8px;
+}
+
+.form-shift {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 350px;
+  margin: auto;
+}
+.select-user {
+  width: 320px;
+  margin-top: 10px;
+  padding-right: 5px;
 }
